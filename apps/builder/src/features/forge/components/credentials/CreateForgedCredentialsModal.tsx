@@ -1,0 +1,148 @@
+import { TextInput } from "@/components/inputs/TextInput";
+import { useWorkspace } from "@/features/workspace/WorkspaceProvider";
+import { useToast } from "@/hooks/useToast";
+import { trpc } from "@/lib/trpc";
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Stack,
+} from "@chakra-ui/react";
+import type { Credentials } from "@typebot.io/credentials/schemas";
+import type { ForgedBlockDefinition } from "@typebot.io/forge-repository/definitions";
+import { useState } from "react";
+import { ZodObjectLayout } from "../zodLayouts/ZodObjectLayout";
+
+type Props = {
+  blockDef: ForgedBlockDefinition;
+  isOpen: boolean;
+  defaultData?: any;
+  scope: "workspace" | "user";
+  onClose: () => void;
+  onNewCredentials: (id: string) => void;
+};
+
+export const CreateForgedCredentialsModal = ({
+  blockDef,
+  isOpen,
+  defaultData,
+  scope,
+  onClose,
+  onNewCredentials,
+}: Props) => {
+  if (!blockDef.auth) return null;
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} size="lg">
+      <ModalOverlay />
+      <CreateForgedCredentialsModalContent
+        defaultData={defaultData}
+        blockDef={blockDef}
+        scope={scope}
+        onNewCredentials={(id) => {
+          onClose();
+          onNewCredentials(id);
+        }}
+      />
+    </Modal>
+  );
+};
+
+export const CreateForgedCredentialsModalContent = ({
+  blockDef,
+  onNewCredentials,
+  scope,
+}: Pick<Props, "blockDef" | "onNewCredentials" | "defaultData" | "scope">) => {
+  const { workspace } = useWorkspace();
+  const { showToast } = useToast();
+  const [name, setName] = useState("");
+  const [data, setData] = useState({});
+
+  const [isCreating, setIsCreating] = useState(false);
+
+  const {
+    credentials: {
+      listCredentials: { refetch: refetchCredentials },
+    },
+  } = trpc.useContext();
+
+  const { mutate } = trpc.credentials.createCredentials.useMutation({
+    onMutate: () => setIsCreating(true),
+    onSettled: () => setIsCreating(false),
+    onError: (err) => {
+      showToast({
+        description: err.message,
+        status: "error",
+      });
+    },
+    onSuccess: (data) => {
+      refetchCredentials();
+      onNewCredentials(data.credentialsId);
+    },
+  });
+
+  const createOpenAICredentials = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!workspace || !blockDef.auth) return;
+    mutate(
+      scope === "workspace"
+        ? {
+            credentials: {
+              type: blockDef.id,
+              name,
+              data,
+            } as Credentials,
+            scope: "workspace",
+            workspaceId: workspace.id,
+          }
+        : {
+            credentials: {
+              type: blockDef.id,
+              name,
+              data,
+            } as Credentials,
+            scope: "user",
+          },
+    );
+  };
+
+  if (!blockDef.auth) return null;
+  return (
+    <ModalContent>
+      <ModalHeader>Add {blockDef.auth.name}</ModalHeader>
+      <ModalCloseButton />
+      <form onSubmit={createOpenAICredentials}>
+        <ModalBody as={Stack} spacing="6">
+          <TextInput
+            isRequired
+            label="Name"
+            onChange={setName}
+            placeholder="My account"
+            withVariableButton={false}
+            debounceTimeout={0}
+          />
+          <ZodObjectLayout
+            schema={blockDef.auth.schema}
+            data={data}
+            onDataChange={setData}
+          />
+        </ModalBody>
+
+        <ModalFooter>
+          <Button
+            type="submit"
+            isLoading={isCreating}
+            isDisabled={Object.keys(data).length === 0}
+            colorScheme="orange"
+          >
+            Create
+          </Button>
+        </ModalFooter>
+      </form>
+    </ModalContent>
+  );
+};
