@@ -99,7 +99,7 @@ export const SignInForm = ({
         email: emailValue,
         redirect: false,
       });
-      console.log("📤 Sending API Request to /api/auth/check-email");
+      console.log("📤 Sending API Request to /api/auth/check-email", response);
 
       const res = await fetch("/api/auth/check-email", {
         method: "POST",
@@ -109,6 +109,7 @@ export const SignInForm = ({
   
   
       const data = await res.json();
+      console.log("check email", data)
       if(data === null){
         showToast({
           status: "error",
@@ -171,7 +172,7 @@ export const SignInForm = ({
     <Stack spacing="4" w="330px">
       {!isMagicCodeSent && (
         <>
-          <SocialLoginButtons providers={providers} />
+          {/* <SocialLoginButtons providers={providers} /> */}
           {providers?.email && (
             <>
               <DividerWithText mt="6">{t("auth.orEmailLabel")}</DividerWithText>
@@ -182,11 +183,15 @@ export const SignInForm = ({
                   autoComplete="email"
                   placeholder="email@company.com"
                   required
+                  borderColor="black"
+                  color="black"
                   value={emailValue}
                   onChange={handleEmailChange}
                 />
                 <Button
                   type="submit"
+                  background='black'
+                  color='white'
                   isLoading={
                     ["loading", "authenticated"].includes(status) || authLoading
                   }
@@ -204,22 +209,47 @@ export const SignInForm = ({
           <Alert status="success" w="100%">
             <HStack>
               <AlertIcon />
-              <Stack spacing={1}>
+              <Stack spacing={1} color="black">
                 <Text fontWeight="medium">{t("auth.magicLink.title")}</Text>
                 <Text fontSize="sm">{t("auth.magicLink.description")}</Text>
               </Stack>
+
             </HStack>
           </Alert>
-          <FormControl as={VStack} spacing={0}>
-            <FormLabel>Login code:</FormLabel>
+          <FormControl as={VStack} spacing={0} color="black">
+            <FormLabel color='black'>Login code:</FormLabel>
             <HStack>
               <PinInput onComplete={redirectToMagicLink}>
-                <PinInputField />
-                <PinInputField />
-                <PinInputField />
-                <PinInputField />
-                <PinInputField />
-                <PinInputField />
+              <PinInputField
+                _placeholder={{ color: "black" }}
+                borderColor="black"
+                color="black"
+              />
+              <PinInputField
+                _placeholder={{ color: "black" }}
+                borderColor="black"
+                color="black"
+              />
+              <PinInputField
+                _placeholder={{ color: "black" }}
+                borderColor="black"
+                color="black"
+              />
+              <PinInputField
+                _placeholder={{ color: "black" }}
+                borderColor="black"
+                color="black"
+              />
+              <PinInputField
+                _placeholder={{ color: "black" }}
+                borderColor="black"
+                color="black"
+              />
+              <PinInputField
+                _placeholder={{ color: "black" }}
+                borderColor="black"
+                color="black"
+              />
               </PinInput>
             </HStack>
           </FormControl>

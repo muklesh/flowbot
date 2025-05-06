@@ -56,7 +56,7 @@ export const SocialLoginButtons = ({ providers }: Props) => {
   const handleKeyCloackClick = () => handleSignIn("keycloak");
 
   return (
-    <Stack>
+    <Stack color="black">
       {providers?.github && (
         <Button
           leftIcon={<GithubIcon />}
@@ -76,6 +76,7 @@ export const SocialLoginButtons = ({ providers }: Props) => {
           leftIcon={<GoogleLogo />}
           onClick={handleGoogleClick}
           data-testid="google"
+          color='black'
           isLoading={
             ["loading", "authenticated"].includes(status) ||
             authLoading === "google"

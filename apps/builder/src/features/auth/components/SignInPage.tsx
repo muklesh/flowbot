@@ -18,6 +18,7 @@ export const SignInPage = ({ type }: Props) => {
     <VStack spacing={4} h="100vh" justifyContent="center">
       <Box maxW="400px" w="full" borderRadius="lg" boxShadow="lg" p={4} bg="white">
       <Seo
+        
         title={
           type === "signin"
             ? t("auth.signin.heading")
@@ -25,14 +26,14 @@ export const SignInPage = ({ type }: Props) => {
         }
       />
       <Image
-        src="https://cdn-kohml.nitrocdn.com/dmAXrphXxPEYUITcVmculHhDZfQIBZzg/assets/images/optimized/rev-e799dd8/mcube.com/wp-content/uploads/2023/10/website-logo-2.png" 
+        src="https://mcube.com/wp-content/uploads/2023/10/website-logo-1.png" 
         alt="Logo"
         borderRadius={10}
-        background="black"
+        // background="black"
         display="block"
         mx="auto"
       />
-      <Heading textAlign="center" m={4}>
+      <Heading textAlign="center" m={4} color="black">
         {type === "signin"
           ? t("auth.signin.heading")
           : t("auth.register.heading")}
