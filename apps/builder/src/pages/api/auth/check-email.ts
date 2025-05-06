@@ -4,6 +4,7 @@ import prisma from "@typebot.io/prisma";
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
 
+    
     if (req.method !== "POST") {
       return res.status(405).json({ error: "Method Not Allowed" });
     }
