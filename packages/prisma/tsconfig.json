@@ -1,14 +1,4 @@
 {
   "extends": "@typebot.io/tsconfig/base.json",
-  "compilerOptions": {
-    "outDir": "dist",             
-    "declaration": true,
-    "module": "ESNext", 
-    "target": "ES2020",     
-    "moduleResolution": "Node",
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true
-  },
   "include": ["src/**/*.ts", "scripts/**/*.ts"]
 }
